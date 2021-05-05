@@ -10,7 +10,7 @@ import (
 var (
 	version = "dev"
 	commit  = "none"
-	date    = "unknown"
+	time    = "unknown"
 )
 
 func newVersionCmd() *cobra.Command {
@@ -21,7 +21,7 @@ func newVersionCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("Version:    %s\n", version)
 			fmt.Printf("Go Version: %s\n", runtime.Version())
-			fmt.Printf("Built on:   %s\n", date)
+			fmt.Printf("Built on:   %s\n", time)
 			fmt.Printf("Commit:     %s\n", commit)
 		},
 	}
