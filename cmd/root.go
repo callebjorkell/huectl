@@ -15,11 +15,7 @@ func Huectl() *cobra.Command {
 	}
 
 	rootCmd.AddCommand(newVersionCmd())
-
-	lightsCmd := newLightsCmd()
-	rootCmd.AddCommand(lightsCmd)
-
-	lightsCmd.AddCommand(newListLightsCmd())
+	rootCmd.AddCommand(newLightsCmd())
 
 	return rootCmd
 }
