@@ -5,6 +5,7 @@ import (
 	"github.com/amimof/huego"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"sort"
 	"strconv"
 	"text/tabwriter"
 
@@ -51,6 +52,11 @@ func newListLightsCmd() *cobra.Command {
 	}
 }
 
+type byID []huego.Light
+func (a byID) Len() int           { return len(a) }
+func (a byID) Less(i, j int) bool { return a[i].ID < a[j].ID }
+func (a byID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
 func listLightsCmd() error {
 	b, err := getBridge()
 	if err != nil {
@@ -62,6 +68,8 @@ func listLightsCmd() error {
 		return fmt.Errorf("unable to list lights: %w", err)
 	}
 
+	sort.Sort(byID(lights))
+	
 	tw := tabwriter.NewWriter(os.Stdout, 0, 4, 4, ' ', 0)
 	defer tw.Flush()
 
