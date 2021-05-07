@@ -6,7 +6,10 @@ TIME:=$(shell date -Is)
 BIN:=huectl
 PKG:=github.com/callebjorkell/huectl
 
-.PHONY: bin
+.PHONY: bin install
 
 bin:
 	go build -ldflags "-X $(PKG)/cmd.commit=$(VERSION) -X $(PKG)/cmd.time=$(TIME)" -o $(BIN) .
+
+install: bin
+	cp $(BIN) $(HOME)/bin/
