@@ -27,7 +27,6 @@ func (f *colorFormatter) Format(entry *log.Entry) ([]byte, error) {
 
 func main() {
 	log.SetFormatter(&colorFormatter{})
-	log.SetLevel(log.DebugLevel)
 
 	if err := cmd.Huectl().Execute(); err != nil {
 		log.Fatal(err)
