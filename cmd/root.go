@@ -22,6 +22,7 @@ func Huectl() *cobra.Command {
 
 	rootCmd.AddCommand(newVersionCmd())
 	rootCmd.AddCommand(newLightsCmd())
+	rootCmd.AddCommand(newConnectCmd())
 	rootCmd.PersistentFlags().Bool("debug", false, "Turn on debug logging.")
 
 	return rootCmd

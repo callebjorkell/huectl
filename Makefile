@@ -1,7 +1,7 @@
 GIT_HASH:=$(shell git rev-parse --short HEAD)
 DIRTY:=$(shell test -z "`git status --porcelain`" || echo "-dirty")
 VERSION:=$(GIT_HASH)$(DIRTY)
-TIME:=$(shell date -Is)
+TIME:=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 BIN:=huectl
 PKG:=github.com/callebjorkell/huectl
@@ -13,3 +13,6 @@ bin:
 
 install: bin
 	cp $(BIN) $(HOME)/bin/
+
+clean:
+	rm -f $(BIN)
