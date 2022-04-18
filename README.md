@@ -2,19 +2,21 @@
 My own take on a command line control for Philips Hue lights. Small CLI tool using cobra, and huego
 
 ```shell
-$ huectl 
 huectl controls a Philips Hue installation
 
 Usage:
   huectl [command]
 
 Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  connect     Connects to a bridge, storing the new user in a config. The link button must be pressed before running this command.
   help        Help about any command
   lights      Manage individual lights
   version     Prints the version of huectl
 
 Flags:
-  -h, --help   help for huectl
+      --debug   Turn on debug logging.
+  -h, --help    help for huectl
 
 Use "huectl [command] --help" for more information about a command.
 ```
