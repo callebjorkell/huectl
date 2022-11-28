@@ -34,6 +34,7 @@ func newLightsCmd() *cobra.Command {
 	cmd.AddCommand(newLightOffCmd())
 	cmd.AddCommand(newLightToggleCmd())
 	cmd.AddCommand(newLightBrightnessCmd())
+	cmd.AddCommand(newLightColorCmd())
 
 	return &cmd
 }
@@ -53,6 +54,7 @@ func newListLightsCmd() *cobra.Command {
 }
 
 type byID []huego.Light
+
 func (a byID) Len() int           { return len(a) }
 func (a byID) Less(i, j int) bool { return a[i].ID < a[j].ID }
 func (a byID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
@@ -69,7 +71,7 @@ func listLightsCmd() error {
 	}
 
 	sort.Sort(byID(lights))
-	
+
 	tw := tabwriter.NewWriter(os.Stdout, 0, 4, 4, ' ', 0)
 	defer tw.Flush()
 
@@ -157,6 +159,39 @@ func newLightBrightnessCmd() *cobra.Command {
 	return &cmd
 }
 
+func newLightColorCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:     "color",
+		Aliases: []string{"col"},
+		Short:   "Set the color of the light",
+		Long:    "Set the color, using hue and saturation.",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return fmt.Errorf("hue and saturation arguments required")
+			}
+
+			if _, err := strconv.ParseUint(args[0], 10, 16); err != nil {
+				return fmt.Errorf("hue needs to be a uint16")
+			}
+			if _, err := strconv.ParseUint(args[1], 10, 8); err != nil {
+				return fmt.Errorf("saturation needs to be a uint8")
+			}
+
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			hue := toUint16(args[0])
+			sat := toUint8(args[1])
+
+			if err := simpleLightCommand(lightIds, lightColor(hue, sat)); err != nil {
+				log.Fatal(err)
+			}
+		},
+	}
+
+	return &cmd
+}
+
 func uintArgs() cobra.PositionalArgs {
 	return func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
@@ -223,9 +258,17 @@ func toUint8(arg string) uint8 {
 	return uint8(a)
 }
 
+func toUint16(arg string) uint16 {
+	a, err := strconv.ParseUint(arg, 10, 16)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return uint16(a)
+}
+
 func addValue(a uint8) valueTransformer {
 	return func(b uint8) uint8 {
-		if a > 255 - b {
+		if a > 255-b {
 			return 255
 		}
 		return a + b
@@ -254,6 +297,20 @@ func lightBrightness(transformer valueTransformer) lightCommand {
 	}
 }
 
+func lightColor(hue uint16, saturation uint8) lightCommand {
+	return func(l *huego.Light) error {
+		err := l.Hue(hue)
+		if err != nil {
+			return fmt.Errorf("could not set hue: %w", err)
+		}
+		err = l.Sat(saturation)
+		if err != nil {
+			return fmt.Errorf("could not set saturation: %w", err)
+		}
+		return nil
+	}
+}
+
 func lightOff() lightCommand {
 	return func(l *huego.Light) error {
 		return l.Off()
@@ -268,4 +325,3 @@ func lightToggle() lightCommand {
 		return l.On()
 	}
 }
-
